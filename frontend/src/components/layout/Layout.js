@@ -5,7 +5,7 @@ const Layout = (props) => {
   return (
     <div className="wrapper">
       <div className="content">
-        <Menu />
+        <Menu isLoggedIn={props.isLoggedIn} onLogout={props.onLogout} />
         {props.children}
       </div>
       <Footer />

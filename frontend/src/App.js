@@ -1,80 +1,58 @@
-import { useEffect, useReducer } from "react";
-import { Route, Switch } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import "./App.css";
 import Layout from "./components/layout/Layout";
-import UsersPage from "./pages/Users";
-import ProjectPage from "./pages/Projects";
-import TodoPage from "./pages/Todos";
-
-const dataReducer = (state, action) => {
-  if (action.type === "USER_DATA") {
-    return { ...state, usersData: action.data, isLoadingUsers: false };
-  }
-  if (action.type === "PROJECT_DATA") {
-    return { ...state, projectsData: action.data, isLoadingProjects: false };
-  }
-  if (action.type === "TODO_DATA") {
-    return { ...state, todosData: action.data, isLoadingTodos: false };
-  }
-};
+import LoginForm from "./components/Forms/LoginForm";
+import Home from "./components/Home/Home";
 
 function App() {
-  const [dataState, dispatchData] = useReducer(dataReducer, {
-    usersData: [],
-    projectsData: [],
-    todosData: [],
-    isLoadingUsers: true,
-    isLoadingProjects: true,
-    isLoadingTodos: true,
-  });
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/users/")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        dispatchData({ type: "USER_DATA", data: data.results });
-      });
-    fetch("http://127.0.0.1:8000/api/projects/")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        dispatchData({ type: "PROJECT_DATA", data: data.results });
-      });
-    fetch("http://127.0.0.1:8000/api/todo/")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        dispatchData({ type: "TODO_DATA", data: data.results });
-      });
+    const loginToken = localStorage.getItem("token");
+
+    if (loginToken && loginToken !== "undefined") {
+      setIsLogin(true);
+    }
   }, []);
 
+  const loginHandler = (username, password) => {
+    const data = {
+      username: username,
+      password: password,
+    };
+    fetch("http://127.0.0.1:8000/api-token-auth/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        saveToken(data["token"]);
+        setIsLogin(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const saveToken = (token) => {
+    localStorage.setItem("token", token);
+  };
+
+  const logoutHandler = () => {
+    localStorage.removeItem("token");
+    setIsLogin(false);
+  };
+
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" exact>
-          <UsersPage
-            isLoading={dataState.isLoadingUsers}
-            userList={dataState.usersData}
-          />
-        </Route>
-        <Route path="/projects/:id" exact>
-          <ProjectPage
-            isLoading={dataState.isLoadingProjects}
-            projectList={dataState.projectsData}
-          />
-        </Route>
-        <Route path="/projects/:id/todo/">
-          <TodoPage
-            isLoading={dataState.isLoadingTodos}
-            todoList={dataState.todosData}
-          />
-        </Route>
-      </Switch>
+    <Layout isLoggedIn={isLogin} onLogout={logoutHandler}>
+      {isLogin && <Home onLogout={logoutHandler} />}
+      {!isLogin && <LoginForm onLogin={loginHandler} />}
     </Layout>
   );
 }
