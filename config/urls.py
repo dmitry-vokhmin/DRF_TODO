@@ -19,6 +19,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 from django.conf import settings
 from django.conf.urls.static import static
+from graphene_django.views import GraphQLView
 from todo_apps.users.views import UserModelViewSet
 from todo_apps.todo.views import ProjectModelViewSet, TodoModelViewSet
 from todo_apps.todo.urls import schema_view
@@ -36,4 +37,5 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path("graphql/", GraphQLView.as_view(graphiql=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
