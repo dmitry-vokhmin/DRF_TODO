@@ -8,11 +8,13 @@ const ProjectsList = (props) => {
           <th>Id</th>
           <th>Project name</th>
           <th>ToDos</th>
+          <th>Delete</th>
+          <th>Add</th>
         </tr>
       </thead>
       <tbody>
         {props.projectList.map((project) => (
-          <ProjectItem key={project.id} project={project} />
+          <ProjectItem key={project.id} project={project} onDelete={props.onDelete} onShow={props.onShowForm}/>
         ))}
       </tbody>
     </table>

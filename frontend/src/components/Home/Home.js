@@ -31,7 +31,6 @@ const Home = () => {
       "Content-Type": "application/json",
       Authorization: "Token " + localStorage.getItem("token"),
     };
-    console.log(localStorage.getItem("token"))
     fetch("http://127.0.0.1:8000/api/users/", {
       headers: header,
     })

@@ -19,6 +19,10 @@ class ProjectModelViewSet(ModelViewSet):
     pagination_class = ProjectLimitOffsetPagination
     filterset_class = ProjectFilter
 
+    def create(self, request, *args, **kwargs):
+        request.data['users'] = [request.user.id]
+        return super().create(request, *args, **kwargs)
+
 
 class TodoLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 20
@@ -30,6 +34,10 @@ class TodoModelViewSet(ModelViewSet):
     serializer_class = TodoSerializer
     pagination_class = TodoLimitOffsetPagination
     filterset_class = TodoFilter
+
+    def create(self, request, *args, **kwargs):
+        request.data['user'] = request.user.id
+        return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

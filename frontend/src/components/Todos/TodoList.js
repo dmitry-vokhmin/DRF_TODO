@@ -7,11 +7,13 @@ const TodoList = (props) => {
         <tr>
           <th>Id</th>
           <th>Text</th>
+          <th>Delete</th>
+          <th>Add</th>
         </tr>
       </thead>
       <tbody>
         {props.todoList.map((todo) => (
-          <TodoItem key={todo.id} todo={todo} />
+          <TodoItem key={todo.id} todo={todo} onDelete={props.onDelete} onShow={props.onShowForm}/>
         ))}
       </tbody>
     </table>
