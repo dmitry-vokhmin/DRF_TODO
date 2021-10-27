@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:13.4
+    privileged: true
+    ports:
+      - 24322:5432
+    environment:
+      POSTGRES_USER: dima
+      POSTGRES_PASSWORD: qwerty
+      POSTGRES_DB: todos
+
+  backend:
+    build: ./
+    privileged: true
+    ports:
+      - 8080:8080
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    command: bash -c "
+      python manage.py migrate --settings=config.settings.production &&
+      gunicorn config.wsgi -b 0.0.0.0:8080
+      "
+    depends_on:
+      - db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8000:80
+    depends_on:
+      - backend

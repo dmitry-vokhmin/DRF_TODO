@@ -1,0 +1,17 @@
+.header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    background: antiquewhite;
+}
+
+.header__content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.menu_nav {
+    display: flex;
+    gap: 5px;
+}
